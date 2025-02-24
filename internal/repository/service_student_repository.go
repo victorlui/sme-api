@@ -119,7 +119,7 @@ func (conn *ServiceStudentRepository) UpdateServiceStudent(id int, student_servi
 	return student_service, nil
 }
 
-func (conn *ServiceStudentRepository) GetAllServicesStudents(offset, limit int, date_initial, date_end, idStudent string) ([]model.ServiceStudentResponse, error) {
+func (conn *ServiceStudentRepository) GetAllServicesStudents(offset, limit int, date, idStudent string) ([]model.ServiceStudentResponse, error) {
 
 	var query string
 	var args []interface{}
@@ -150,12 +150,12 @@ func (conn *ServiceStudentRepository) GetAllServicesStudents(offset, limit int, 
 			users u ON ss.user_id = u.id
 	`
 
-	if date_initial != "" && date_end != "" {
-		startDate := strings.Trim(date_initial, `"`) + " 00:00:00"
-		endDate := strings.Trim(date_end, `"`) + " 23:59:59"
+	if date != "" {
+		startDate := strings.Trim(date, `"`) + " 23:59:59"
+		//endDate := strings.Trim(date_end, `"`) + " 23:59:59"
 
-		conditions = append(conditions, "ss.date_service BETWEEN $"+strconv.Itoa(len(args)+1)+" AND $"+strconv.Itoa(len(args)+2))
-		args = append(args, startDate, endDate)
+		conditions = append(conditions, "ss.date_service = $"+strconv.Itoa(len(args)+1))
+		args = append(args, startDate)
 	}
 
 	if idStudent != "" {

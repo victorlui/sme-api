@@ -51,10 +51,10 @@ func (r *ServiceStudentHandler) UpdateNewServiceStudentHandler(id int, req model
 	return &createdStudentService, nil
 }
 
-func (r *ServiceStudentHandler) GetAllServiceStudents(page, limit int, date_inital, date_end, idStudent string) (*[]model.ServiceStudentResponse, error) {
+func (r *ServiceStudentHandler) GetAllServiceStudents(page, limit int, date, idStudent string) (*[]model.ServiceStudentResponse, error) {
 	offset := (page - 1) * limit
 
-	services_students, err := r.repo.GetAllServicesStudents(offset, limit, date_inital, date_end, idStudent)
+	services_students, err := r.repo.GetAllServicesStudents(offset, limit, date, idStudent)
 
 	if err != nil {
 		return &[]model.ServiceStudentResponse{}, err

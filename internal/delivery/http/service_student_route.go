@@ -92,11 +92,11 @@ func GETServiceStudent(serviceStudenthandler *handler.ServiceStudentHandler) gin
 			return
 		}
 
-		date_initial := ctx.DefaultQuery("date_initial", "")
-		date_end := ctx.DefaultQuery("date_end", "")
+		date := ctx.DefaultQuery("date_initial", "")
+		//date_end := ctx.DefaultQuery("date_end", "")
 		idStudent := ctx.DefaultQuery("idStudent", "")
 
-		service_students, err := serviceStudenthandler.GetAllServiceStudents(page, limit, date_initial, date_end, idStudent)
+		service_students, err := serviceStudenthandler.GetAllServiceStudents(page, limit, date, idStudent)
 
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, err)

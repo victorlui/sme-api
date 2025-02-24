@@ -150,7 +150,7 @@ func (conn *ServiceStudentRepository) GetAllServicesStudents(offset, limit int, 
 			users u ON ss.user_id = u.id
 	`
 
-	queryCount := "SELECT COUNT(*) FROM service_students"
+	queryCount := "SELECT COUNT(*) FROM service_students ss JOIN student s ON ss.student_id = s.id JOIN users u ON ss.user_id = u.id"
 
 	if date != "" {
 		startDate := strings.Trim(date, `"`) + " 23:59:59"

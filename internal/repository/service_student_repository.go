@@ -167,11 +167,13 @@ func (conn *ServiceStudentRepository) GetAllServicesStudents(offset, limit int, 
 
 	if len(conditions) > 0 {
 		query += " WHERE " + strings.Join(conditions, " AND ")
+		queryCount += " WHERE " + strings.Join(conditions, " AND ")
 	}
 
 	err := conn.db.QueryRow(context.Background(), queryCount, args...).Scan(&totalRecords)
 
 	if err != nil {
+		log.Printf("Error executing queryRow: %v", err)
 		return []model.ServiceStudentResponse{}, 0, err
 	}
 

@@ -154,7 +154,7 @@ func (conn *ServiceStudentRepository) GetAllServicesStudents(offset, limit int, 
 		startDate := strings.Trim(date, `"`) + " 23:59:59"
 		//endDate := strings.Trim(date_end, `"`) + " 23:59:59"
 
-		conditions = append(conditions, "ss.date_service = $"+strconv.Itoa(len(args)+1))
+		conditions = append(conditions, "DATE(ss.date_service) = $"+strconv.Itoa(len(args)+1))
 		args = append(args, startDate)
 	}
 

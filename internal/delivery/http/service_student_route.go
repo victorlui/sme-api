@@ -96,12 +96,19 @@ func GETServiceStudent(serviceStudenthandler *handler.ServiceStudentHandler) gin
 		//date_end := ctx.DefaultQuery("date_end", "")
 		idStudent := ctx.DefaultQuery("idStudent", "")
 
-		service_students, err := serviceStudenthandler.GetAllServiceStudents(page, limit, date, idStudent)
+		service_students, total_records, err := serviceStudenthandler.GetAllServiceStudents(page, limit, date, idStudent)
 
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, err)
+			return
 		}
-		ctx.JSON(http.StatusOK, service_students)
+		totalPages := (total_records + limit - 1) / limit
+
+		ctx.JSON(http.StatusCreated, gin.H{
+			"itens":      service_students,
+			"totalItems": total_records,
+			"totalPage":  totalPages,
+		})
 	}
 }
 

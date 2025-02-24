@@ -119,8 +119,8 @@ func (conn *ServiceStudentRepository) UpdateServiceStudent(id int, student_servi
 	return student_service, nil
 }
 
-func (conn *ServiceStudentRepository) GetAllServicesStudents(offset, limit int, date, idStudent string) ([]model.ServiceStudentResponse, error) {
-
+func (conn *ServiceStudentRepository) GetAllServicesStudents(offset, limit int, date, idStudent string) ([]model.ServiceStudentResponse, int, error) {
+	var totalRecords int
 	var query string
 	var args []interface{}
 	var conditions []string
@@ -150,6 +150,8 @@ func (conn *ServiceStudentRepository) GetAllServicesStudents(offset, limit int, 
 			users u ON ss.user_id = u.id
 	`
 
+	queryCount := "SELECT COUNT(*) FROM service_students"
+
 	if date != "" {
 		startDate := strings.Trim(date, `"`) + " 23:59:59"
 		//endDate := strings.Trim(date_end, `"`) + " 23:59:59"
@@ -167,6 +169,12 @@ func (conn *ServiceStudentRepository) GetAllServicesStudents(offset, limit int, 
 		query += " WHERE " + strings.Join(conditions, " AND ")
 	}
 
+	err := conn.db.QueryRow(context.Background(), queryCount, args...).Scan(&totalRecords)
+
+	if err != nil {
+		return []model.ServiceStudentResponse{}, 0, err
+	}
+
 	query += fmt.Sprintf(`
 		ORDER BY ss.date_service DESC
 		LIMIT $%d OFFSET $%d;
@@ -177,7 +185,7 @@ func (conn *ServiceStudentRepository) GetAllServicesStudents(offset, limit int, 
 	rows, err := conn.db.Query(context.Background(), query, args...)
 	if err != nil {
 		log.Printf("Error executing query: %v", err)
-		return []model.ServiceStudentResponse{}, err
+		return []model.ServiceStudentResponse{}, 0, err
 	}
 	defer rows.Close()
 
@@ -202,7 +210,7 @@ func (conn *ServiceStudentRepository) GetAllServicesStudents(offset, limit int, 
 			&ss.User.Email,
 		); err != nil {
 			log.Printf("Error scanning row: %v", err)
-			return []model.ServiceStudentResponse{}, err
+			return []model.ServiceStudentResponse{}, 0, err
 		}
 
 		service_students = append(service_students, ss)
@@ -210,14 +218,14 @@ func (conn *ServiceStudentRepository) GetAllServicesStudents(offset, limit int, 
 
 	if err := rows.Err(); err != nil {
 		log.Printf("Error iterating over rows: %v", err)
-		return []model.ServiceStudentResponse{}, err
+		return []model.ServiceStudentResponse{}, 0, err
 	}
 
 	if len(service_students) == 0 {
-		return []model.ServiceStudentResponse{}, nil
+		return []model.ServiceStudentResponse{}, 0, nil
 	}
 
-	return service_students, nil
+	return service_students, totalRecords, nil
 }
 
 func (conn *ServiceStudentRepository) DeleteServicesStudents(id int) error {

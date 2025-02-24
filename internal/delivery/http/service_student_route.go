@@ -99,7 +99,7 @@ func GETServiceStudent(serviceStudenthandler *handler.ServiceStudentHandler) gin
 		service_students, total_records, err := serviceStudenthandler.GetAllServiceStudents(page, limit, date, idStudent)
 
 		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, err)
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 		totalPages := (total_records + limit - 1) / limit
